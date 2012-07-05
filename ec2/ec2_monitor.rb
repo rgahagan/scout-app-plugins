@@ -46,7 +46,6 @@ class Ec2Monitor < Scout::Plugin
   #  svctime - The average service time (in milliseconds) for I/O requests that were issued to the device.
   #  avgqu-sz - The average queue length of the requests that were issued to the device
   def ebs_timing
-    ebs_device = ebs_device.gsub(/,/, '|')
     avgqu_sz = `iostat -x | grep -E '#{ebs_device}' | awk '{sum+=$9} END {print sum/NR}'`
     await = `iostat -x | grep -E '#{ebs_device}' | awk '{sum+=$10} END {print sum/NR}'`
     svctm = `iostat -x | grep -E '#{ebs_device}' | awk '{sum+=$11} END {print sum/NR}'`
@@ -59,7 +58,7 @@ class Ec2Monitor < Scout::Plugin
   end
 
   def ebs_device
-      option(:ebs_device) || 'sdi'
+      (option(:ebs_device) || 'sdi').gsub(/,/, '|')
   end
 
 end
